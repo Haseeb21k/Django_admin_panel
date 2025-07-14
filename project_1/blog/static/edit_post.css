@@ -1,0 +1,149 @@
+/* Reset and base styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+}
+
+body {
+  background-color: #f9fafb;
+  padding: 30px 15px;
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+  align-items: flex-start;
+}
+
+/* Container for the form */
+form {
+  background: #ffffff;
+  padding: 30px 35px;
+  border-radius: 8px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Heading */
+h1 {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 30px;
+  color: #1e90ff;
+  font-weight: 700;
+}
+
+/* Debug paragraphs - style to stand out but subtle */
+p {
+  font-size: 0.9rem;
+  color: #555;
+  background: #e6f0ff;
+  padding: 10px 15px;
+  border-radius: 5px;
+  margin-bottom: 15px;
+  border-left: 4px solid #1e90ff;
+  word-wrap: break-word;
+}
+
+/* Labels */
+label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  font-size: 1rem;
+  color: #444;
+  display: block;
+}
+
+/* Text input */
+input[type="text"],
+textarea {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 1rem;
+  border: 1.8px solid #ccc;
+  border-radius: 6px;
+  resize: vertical;
+  transition: border-color 0.25s ease-in-out;
+  font-family: inherit;
+  margin-bottom: 25px;
+  min-height: 100px; /* for textarea minimum height */
+}
+
+/* Textarea specific tweak */
+textarea {
+  min-height: 140px;
+  line-height: 1.4;
+}
+
+/* Focus state for inputs */
+input[type="text"]:focus,
+textarea:focus {
+  outline: none;
+  border-color: #1e90ff;
+  box-shadow: 0 0 6px rgba(30, 144, 255, 0.3);
+}
+
+/* Submit button */
+button[type="submit"] {
+  background-color: #1e90ff;
+  border: none;
+  color: white;
+  font-weight: 700;
+  padding: 14px 0;
+  font-size: 1.15rem;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 4px 12px rgba(30, 144, 255, 0.4);
+}
+
+button[type="submit"]:hover,
+button[type="submit"]:focus {
+  background-color: #176fd1;
+  outline: none;
+  box-shadow: 0 6px 15px rgba(23,111,209,0.6);
+}
+
+/* Link back to home */
+a {
+  display: block;
+  margin-top: 30px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 1rem;
+  color: #1e90ff;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+a:hover,
+a:focus {
+  color: #176fd1;
+  text-decoration: underline;
+  outline: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  form {
+    padding: 25px 20px;
+  }
+
+  h1 {
+    font-size: 1.6rem;
+  }
+
+  button[type="submit"] {
+    font-size: 1rem;
+    padding: 12px 0;
+  }
+  
+  input[type="text"],
+  textarea {
+    font-size: 0.95rem;
+  }
+}

@@ -1,0 +1,203 @@
+{% extends 'blog/base.html' %}
+{% load static %}
+
+{% block title %}Logged Out - BlogHub{% endblock %}
+
+{% block content %}
+<div class="logout-container">
+    <div class="logout-card">
+        <div class="logout-header">
+            <div class="logout-icon">
+                <i class="fas fa-sign-out-alt"></i>
+            </div>
+            <h1>Successfully Logged Out</h1>
+            <p>You have been successfully logged out of your account.</p>
+        </div>
+
+        <div class="logout-message">
+            <div class="message-content">
+                <i class="fas fa-check-circle"></i>
+                <div>
+                    <h3>Thank you for using BlogHub!</h3>
+                    <p>Your session has been securely ended. Come back anytime to share more stories and connect with our community.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="logout-actions">
+            <a href="{% url 'custom_login' %}" class="btn btn-primary">
+                <i class="fas fa-sign-in-alt"></i> Sign In Again
+            </a>
+            <a href="{% url 'home' %}" class="btn btn-secondary">
+                <i class="fas fa-home"></i> Back to Home
+            </a>
+        </div>
+
+        <div class="logout-footer">
+            <p>New to BlogHub? 
+                <a href="{% url 'custom_signup' %}" class="link-primary">
+                    <i class="fas fa-user-plus"></i>
+                    Create an account
+                </a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<style>
+    .logout-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 60vh;
+        padding: 2rem;
+    }
+
+    .logout-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 3rem;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 500px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        text-align: center;
+    }
+
+    .logout-header {
+        margin-bottom: 2rem;
+    }
+
+    .logout-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        color: white;
+        font-size: 2rem;
+        box-shadow: 0 10px 30px rgba(40, 167, 69, 0.3);
+    }
+
+    .logout-header h1 {
+        font-size: 2.5rem;
+        color: #333;
+        margin-bottom: 1rem;
+        font-weight: 700;
+    }
+
+    .logout-header p {
+        color: #666;
+        font-size: 1.1rem;
+        line-height: 1.6;
+    }
+
+    .logout-message {
+        background: rgba(40, 167, 69, 0.1);
+        border: 1px solid rgba(40, 167, 69, 0.3);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .message-content {
+        display: flex;
+        gap: 1rem;
+        align-items: flex-start;
+        text-align: left;
+    }
+
+    .message-content i {
+        color: #28a745;
+        font-size: 1.5rem;
+        margin-top: 0.25rem;
+    }
+
+    .message-content h3 {
+        color: #333;
+        margin-bottom: 0.75rem;
+        font-size: 1.2rem;
+    }
+
+    .message-content p {
+        color: #666;
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    .logout-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .logout-actions .btn {
+        padding: 1rem 2rem;
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        min-width: 150px;
+        justify-content: center;
+    }
+
+    .logout-footer {
+        padding-top: 2rem;
+        border-top: 1px solid #eee;
+    }
+
+    .logout-footer p {
+        color: #666;
+        margin-bottom: 0;
+    }
+
+    .link-primary {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: color 0.3s ease;
+    }
+
+    .link-primary:hover {
+        color: #5a6fd8;
+        text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+        .logout-container {
+            padding: 1rem;
+        }
+
+        .logout-card {
+            padding: 2rem;
+        }
+
+        .logout-header h1 {
+            font-size: 2rem;
+        }
+
+        .logout-icon {
+            width: 60px;
+            height: 60px;
+            font-size: 1.5rem;
+        }
+
+        .logout-actions {
+            flex-direction: column;
+        }
+
+        .logout-actions .btn {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}

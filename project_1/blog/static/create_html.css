@@ -1,0 +1,169 @@
+/* ===== Reset & Base Styles ===== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.5;
+  color: #ffffff;
+}
+
+body {
+  background-color: #fafafa;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 40px 20px;
+}
+
+
+form {
+  background: #fff;
+  max-width: 600px;
+  width: 100%;
+  border-radius: 10px;
+  padding: 30px 40px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== Heading ===== */
+h1 {
+  font-size: 2.4rem;
+  color: #2c3e50;
+  margin-bottom: 25px;
+  text-align: center;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+/* ===== Django Form Field Styling ===== */
+form p {
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Assuming form.as_p wraps each form field in <p>, so we style p label and input accordingly */
+
+/* Label */
+form p label {
+  font-weight: 600;
+  color: #34495e;
+  margin-bottom: 6px;
+  font-size: 1rem;
+}
+
+/* Input, textarea, select */
+form p input[type="text"],
+form p input[type="file"],
+form p input[type="email"],
+form p input[type="password"],
+form p textarea,
+form p select {
+  padding: 12px 15px;
+  border: 1.8px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  resize: vertical;
+  width: 100%;
+  font-family: inherit;
+}
+
+form p input[type="text"]:focus,
+form p input[type="file"]:focus,
+form p input[type="email"]:focus,
+form p input[type="password"]:focus,
+form p textarea:focus,
+form p select:focus {
+  border-color: #2980b9;
+  box-shadow: 0 0 8px rgba(41, 128, 185, 0.4);
+  outline: none;
+}
+
+/* Textarea adjustments */
+form p textarea {
+  min-height: 120px;
+  max-height: 300px;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+/* ===== Button Styling ===== */
+button[type="submit"] {
+  margin-top: 15px;
+  background-color: #2980b9;
+  color: #fff;
+  padding: 15px 0;
+  font-weight: 700;
+  font-size: 1.15rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 100%;
+}
+
+button[type="submit"]:hover,
+button[type="submit"]:focus {
+  background-color: #1c5980;
+  outline: none;
+}
+
+/* ===== Link Back to Home ===== */
+a {
+  display: block;
+  max-width: 600px;
+  margin: 25px auto 0 auto;
+  color: #2980b9;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  font-size: 1rem;
+  transition: color 0.3s ease;
+}
+
+a:hover,
+a:focus {
+  color: #1c5980;
+  text-decoration: underline;
+  outline: none;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 640px) {
+  form {
+    padding: 25px 30px;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+
+  button[type="submit"] {
+    font-size: 1.1rem;
+    padding: 14px 0;
+  }
+}
+
+@media (max-width: 400px) {
+  body {
+    padding: 30px 15px;
+  }
+
+  form {
+    padding: 20px 15px;
+  }
+
+  h1 {
+    font-size: 1.7rem;
+  }
+
+  button[type="submit"] {
+    font-size: 1rem;
+    padding: 13px 0;
+  }
+}

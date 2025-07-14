@@ -1,0 +1,600 @@
+{% extends 'blog/base.html' %}
+{% load static %}
+
+{% block title %}{{ post.title }} - BlogHub{% endblock %}
+
+{% block content %}
+<div class="post-detail-container">
+    <!-- Post Header -->
+    <div class="post-header-section">
+        <div class="breadcrumb">
+            <a href="{% url 'home' %}" class="breadcrumb-link">
+                <i class="fas fa-home"></i> Home
+            </a>
+            <i class="fas fa-chevron-right"></i>
+            <span class="breadcrumb-current">{{ post.title|truncatechars:30 }}</span>
+        </div>
+        
+        <div class="post-title-section">
+            <h1 class="post-title">{{ post.title }}</h1>
+            <div class="post-meta">
+                <div class="author-info">
+                    <div class="author-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="author-details">
+                        <span class="author-name">{{ post.author.username }}</span>
+                        <span class="post-date">
+                            <i class="fas fa-calendar"></i>
+                            {{ post.created_at|date:"F d, Y" }}
+                        </span>
+                    </div>
+                </div>
+                
+                {% if user == post.author %}
+                    <div class="post-actions">
+                        <a href="{% url 'edit_post' post.id %}" class="btn btn-secondary btn-sm">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        <a href="{% url 'delete_post' post.id %}" class="btn btn-danger btn-sm">
+                            <i class="fas fa-trash"></i> Delete
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Post Content -->
+    <div class="post-content-section">
+        <div class="post-content">
+            <div class="content-text">
+                {{ post.content|linebreaks }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Gallery -->
+    {% if images %}
+        <div class="image-gallery-section">
+            <h3><i class="fas fa-images"></i> Gallery</h3>
+            <div class="image-gallery">
+                {% for image in images %}
+                    <div class="image-item" onclick="openLightbox('{{ image.image.url }}', '{{ image.caption|default:"" }}')">
+                        <img src="{{ image.image.url }}" alt="Post Image" loading="lazy">
+                        {% if image.caption %}
+                            <div class="image-caption">
+                                <p>{{ image.caption }}</p>
+                            </div>
+                        {% endif %}
+                        <div class="image-overlay">
+                            <i class="fas fa-expand"></i>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- File Attachments -->
+    {% if files %}
+        <div class="files-section">
+            <h3><i class="fas fa-paperclip"></i> Attachments</h3>
+            <div class="files-list">
+                {% for file in files %}
+                    <div class="file-item">
+                        <div class="file-icon">
+                            {% if file.filename|lower|slice:"-4:" == '.pdf' %}
+                                <i class="fas fa-file-pdf"></i>
+                            {% elif file.filename|lower|slice:"-4:" == '.doc' or file.filename|lower|slice:"-5:" == '.docx' %}
+                                <i class="fas fa-file-word"></i>
+                            {% elif file.filename|lower|slice:"-4:" == '.txt' %}
+                                <i class="fas fa-file-alt"></i>
+                            {% else %}
+                                <i class="fas fa-file"></i>
+                            {% endif %}
+                        </div>
+                        <div class="file-info">
+                            <span class="file-name">{{ file.filename }}</span>
+                            <span class="file-date">
+                                <i class="fas fa-calendar"></i>
+                                {{ file.uploaded_at|date:"M d, Y" }}
+                            </span>
+                        </div>
+                        <a href="{{ file.file.url }}" class="btn btn-primary btn-sm" download>
+                            <i class="fas fa-download"></i> Download
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Post Footer -->
+    <div class="post-footer">
+        <div class="post-stats">
+            <div class="stat-item">
+                <i class="fas fa-images"></i>
+                <span>{{ images.count }} image{{ images.count|pluralize }}</span>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-paperclip"></i>
+                <span>{{ files.count }} file{{ files.count|pluralize }}</span>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-calendar-alt"></i>
+                <span>{{ post.created_at|timesince }} ago</span>
+            </div>
+        </div>
+        
+        <div class="share-section">
+            <h4>Share this post:</h4>
+            <div class="share-buttons">
+                <button class="share-btn" onclick="sharePost()">
+                    <i class="fas fa-share"></i> Share
+                </button>
+                <button class="share-btn" onclick="copyLink()">
+                    <i class="fas fa-link"></i> Copy Link
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Lightbox Modal -->
+<div id="lightbox" class="lightbox" onclick="closeLightbox()">
+    <div class="lightbox-content">
+        <button class="lightbox-close" onclick="closeLightbox()">
+            <i class="fas fa-times"></i>
+        </button>
+        <img id="lightbox-image" src="" alt="Full size image">
+        <div id="lightbox-caption" class="lightbox-caption"></div>
+    </div>
+</div>
+
+<style>
+    .post-detail-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .post-header-section {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+        color: #666;
+    }
+
+    .breadcrumb-link {
+        color: #667eea;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        transition: color 0.3s ease;
+    }
+
+    .breadcrumb-link:hover {
+        color: #5a6fd8;
+    }
+
+    .breadcrumb-current {
+        color: #333;
+        font-weight: 500;
+    }
+
+    .post-title {
+        font-size: 2.5rem;
+        color: #333;
+        margin-bottom: 1.5rem;
+        line-height: 1.2;
+        font-weight: 700;
+    }
+
+    .post-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .author-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .author-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2rem;
+    }
+
+    .author-details {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .author-name {
+        font-weight: 600;
+        color: #333;
+        font-size: 1.1rem;
+    }
+
+    .post-date {
+        color: #666;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .post-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .post-content-section {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .content-text {
+        font-size: 1.1rem;
+        line-height: 1.8;
+        color: #333;
+    }
+
+    .content-text p {
+        margin-bottom: 1.5rem;
+    }
+
+    .content-text p:last-child {
+        margin-bottom: 0;
+    }
+
+    .image-gallery-section,
+    .files-section {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .image-gallery-section h3,
+    .files-section h3 {
+        font-size: 1.5rem;
+        color: #333;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .image-gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .image-item {
+        position: relative;
+        border-radius: 15px;
+        overflow: hidden;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .image-item:hover {
+        transform: translateY(-5px);
+    }
+
+    .image-item img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        display: block;
+    }
+
+    .image-caption {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 1rem;
+        transform: translateY(100%);
+        transition: transform 0.3s ease;
+    }
+
+    .image-item:hover .image-caption {
+        transform: translateY(0);
+    }
+
+    .image-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        color: white;
+        font-size: 1.5rem;
+    }
+
+    .image-item:hover .image-overlay {
+        opacity: 1;
+    }
+
+    .files-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .file-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 10px;
+        border: 1px solid #e1e5e9;
+        transition: all 0.3s ease;
+    }
+
+    .file-item:hover {
+        background: white;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .file-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2rem;
+    }
+
+    .file-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .file-name {
+        font-weight: 600;
+        color: #333;
+    }
+
+    .file-date {
+        color: #666;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .post-footer {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .post-stats {
+        display: flex;
+        gap: 2rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .share-section {
+        border-top: 1px solid #eee;
+        padding-top: 1.5rem;
+    }
+
+    .share-section h4 {
+        color: #333;
+        margin-bottom: 1rem;
+        font-size: 1.1rem;
+    }
+
+    .share-buttons {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .share-btn {
+        padding: 0.75rem 1.5rem;
+        border: 2px solid #667eea;
+        background: transparent;
+        color: #667eea;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .share-btn:hover {
+        background: #667eea;
+        color: white;
+    }
+
+    /* Lightbox */
+    .lightbox {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        z-index: 10000;
+        cursor: pointer;
+    }
+
+    .lightbox-content {
+        position: relative;
+        max-width: 90%;
+        max-height: 90%;
+        margin: 2% auto;
+        text-align: center;
+    }
+
+    .lightbox-close {
+        position: absolute;
+        top: -40px;
+        right: 0;
+        background: none;
+        border: none;
+        color: white;
+        font-size: 2rem;
+        cursor: pointer;
+        z-index: 10001;
+    }
+
+    #lightbox-image {
+        max-width: 100%;
+        max-height: 80vh;
+        border-radius: 10px;
+    }
+
+    .lightbox-caption {
+        color: white;
+        margin-top: 1rem;
+        font-size: 1.1rem;
+    }
+
+    @media (max-width: 768px) {
+        .post-detail-container {
+            padding: 1rem;
+        }
+
+        .post-title {
+            font-size: 2rem;
+        }
+
+        .post-meta {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .image-gallery {
+            grid-template-columns: 1fr;
+        }
+
+        .post-stats {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .share-buttons {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<script>
+    function openLightbox(imageSrc, caption) {
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImage = document.getElementById('lightbox-image');
+        const lightboxCaption = document.getElementById('lightbox-caption');
+        
+        lightboxImage.src = imageSrc;
+        lightboxCaption.textContent = caption;
+        lightbox.style.display = 'block';
+        
+        // Prevent body scroll
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+        const lightbox = document.getElementById('lightbox');
+        lightbox.style.display = 'none';
+        
+        // Restore body scroll
+        document.body.style.overflow = 'auto';
+    }
+
+    function sharePost() {
+        if (navigator.share) {
+            navigator.share({
+                title: '{{ post.title }}',
+                text: 'Check out this post on BlogHub',
+                url: window.location.href
+            });
+        } else {
+            copyLink();
+        }
+    }
+
+    function copyLink() {
+        navigator.clipboard.writeText(window.location.href).then(function() {
+            alert('Link copied to clipboard!');
+        });
+    }
+
+    // Close lightbox with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeLightbox();
+        }
+    });
+</script>
+{% endblock %} 

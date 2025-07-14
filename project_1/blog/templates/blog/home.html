@@ -1,0 +1,373 @@
+{% extends 'blog/base.html' %}
+{% load static %}
+
+{% block title %}BlogHub - Home{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="hero-content">
+        <h1 class="hero-title">
+            <i class="fas fa-feather-alt"></i>
+            Welcome to BlogHub
+        </h1>
+        <p class="hero-subtitle">Share your thoughts, stories, and ideas with the world</p>
+        {% if user.is_authenticated %}
+            <a href="{% url 'create_post' %}" class="btn btn-primary hero-btn">
+                <i class="fas fa-plus"></i> Create Your First Post
+            </a>
+        {% else %}
+            <div class="hero-buttons">
+                <a href="{% url 'custom_signup' %}" class="btn btn-primary hero-btn">
+                    <i class="fas fa-user-plus"></i> Get Started
+                </a>
+                <a href="{% url 'custom_login' %}" class="btn btn-secondary hero-btn">
+                    <i class="fas fa-sign-in-alt"></i> Sign In
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="container">
+    <div class="section-header">
+        <h2><i class="fas fa-newspaper"></i> Latest Posts</h2>
+        <p>Discover amazing stories from our community</p>
+    </div>
+
+    {% if posts %}
+        <div class="posts-grid">
+            {% for post in posts %}
+                <article class="post-card">
+                    <div class="post-header">
+                        <h3 class="post-title">
+                            <a href="{% url 'post_detail' post.id %}" class="post-title-link">
+                                {{ post.title }}
+                            </a>
+                        </h3>
+                        <div class="post-meta">
+                            <span class="author">
+                                <i class="fas fa-user"></i>
+                                <a href="{% url 'public_profile' post.author.username %}" class="author-link">
+                                    {{ post.author.username }}
+                                </a>
+                            </span>
+                            <span class="date">
+                                <i class="fas fa-calendar"></i>
+                                {{ post.created_at|date:"M d, Y" }}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="post-content">
+                        <p>{{ post.content|truncatewords:30 }}</p>
+                    </div>
+
+                    {% if post.images.all %}
+                        <div class="post-images">
+                            <h4><i class="fas fa-images"></i> Gallery</h4>
+                            <div class="image-gallery">
+                                {% for image in post.images.all %}
+                                    <div class="image-item">
+                                        <img src="{{ image.image.url }}" alt="Post Image" loading="lazy">
+                                        {% if image.caption %}
+                                            <p class="image-caption">{{ image.caption }}</p>
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <div class="post-actions">
+                        <a href="{% url 'post_detail' post.id %}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-eye"></i> Read More
+                        </a>
+                        {% if user == post.author %}
+                            <a href="{% url 'edit_post' post.id %}" class="btn btn-secondary btn-sm">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <a href="{% url 'delete_post' post.id %}" class="btn btn-danger btn-sm">
+                                <i class="fas fa-trash"></i> Delete
+                            </a>
+                        {% endif %}
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <i class="fas fa-newspaper"></i>
+            <h3>No posts yet</h3>
+            <p>Be the first to share your story!</p>
+            {% if user.is_authenticated %}
+                <a href="{% url 'create_post' %}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Create Post
+                </a>
+            {% else %}
+                <a href="{% url 'custom_signup' %}" class="btn btn-primary">
+                    <i class="fas fa-user-plus"></i> Join Now
+                </a>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%);
+        padding: 4rem 2rem;
+        text-align: center;
+        color: white;
+        margin-bottom: 2rem;
+        border-radius: 20px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/><circle cx="10" cy="60" r="0.5" fill="white" opacity="0.1"/><circle cx="90" cy="40" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+        opacity: 0.3;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .hero-title {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .hero-subtitle {
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+        opacity: 0.9;
+    }
+
+    .hero-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .hero-btn {
+        padding: 1rem 2rem;
+        font-size: 1.1rem;
+    }
+
+    .section-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .section-header h2 {
+        font-size: 2.5rem;
+        color: #333;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .section-header p {
+        font-size: 1.1rem;
+        color: #666;
+    }
+
+    .posts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 2rem;
+    }
+
+    .post-card {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .post-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .post-header {
+        margin-bottom: 1.5rem;
+    }
+
+    .post-title {
+        font-size: 1.5rem;
+        color: #333;
+        margin-bottom: 1rem;
+        line-height: 1.3;
+    }
+
+    .post-title-link {
+        color: #333;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .post-title-link:hover {
+        color: #667eea;
+    }
+
+    .post-meta {
+        display: flex;
+        gap: 1rem;
+        font-size: 0.9rem;
+        color: #666;
+        flex-wrap: wrap;
+    }
+
+    .post-meta span {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .author-link {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s ease;
+    }
+
+    .author-link:hover {
+        color: #764ba2;
+        text-decoration: underline;
+    }
+
+    .post-content {
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+        color: #555;
+    }
+
+    .post-images {
+        margin-bottom: 1.5rem;
+    }
+
+    .post-images h4 {
+        margin-bottom: 1rem;
+        color: #333;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .image-gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+    }
+
+    .image-item img {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 8px;
+        transition: transform 0.3s ease;
+    }
+
+    .image-item img:hover {
+        transform: scale(1.05);
+    }
+
+    .image-caption {
+        font-size: 0.8rem;
+        color: #666;
+        margin-top: 0.5rem;
+        font-style: italic;
+    }
+
+    .post-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #eee;
+        flex-wrap: wrap;
+    }
+
+    .btn-sm {
+        padding: 0.5rem 1rem;
+        font-size: 0.8rem;
+    }
+
+    .btn-danger {
+        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+        color: white;
+    }
+
+    .btn-danger:hover {
+        background: linear-gradient(135deg, #ee5a52 0%, #ff6b6b 100%);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: #666;
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        color: #ddd;
+        margin-bottom: 1rem;
+    }
+
+    .empty-state h3 {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+        color: #333;
+    }
+
+    .empty-state p {
+        margin-bottom: 2rem;
+    }
+
+    @media (max-width: 768px) {
+        .hero-title {
+            font-size: 2rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1rem;
+        }
+
+        .hero-buttons {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .posts-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .post-card {
+            padding: 1.5rem;
+        }
+
+        .post-actions {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}

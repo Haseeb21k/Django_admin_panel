@@ -1,0 +1,591 @@
+{% extends 'blog/base.html' %}
+{% load static %}
+
+{% block title %}{{ profile_user.username }}'s Profile - BlogHub{% endblock %}
+
+{% block content %}
+<div class="profile-detail-container">
+    <!-- Profile Header -->
+    <div class="profile-header">
+        <div class="profile-cover">
+            <div class="profile-avatar">
+                {% if profile_user.profile.profile_picture %}
+                    <img src="{{ profile_user.profile.profile_picture.url }}" alt="{{ profile_user.username }}'s profile picture">
+                {% else %}
+                    <div class="default-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="profile-info">
+            <div class="profile-main">
+                <h1 class="profile-name">{{ profile_user.profile.get_full_name }}</h1>
+                <p class="profile-username">@{{ profile_user.username }}</p>
+                
+                {% if profile_user.profile.bio %}
+                    <p class="profile-bio">{{ profile_user.profile.bio }}</p>
+                {% endif %}
+                
+                <div class="profile-meta">
+                    {% if profile_user.profile.location %}
+                        <span class="meta-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            {{ profile_user.profile.location }}
+                        </span>
+                    {% endif %}
+                    
+                    {% if profile_user.profile.website %}
+                        <span class="meta-item">
+                            <i class="fas fa-globe"></i>
+                            <a href="{{ profile_user.profile.website }}" target="_blank" rel="noopener">Website</a>
+                        </span>
+                    {% endif %}
+                    
+                    <span class="meta-item">
+                        <i class="fas fa-calendar"></i>
+                        Member since {{ profile_user.date_joined|date:"M Y" }}
+                    </span>
+                </div>
+            </div>
+            
+            <div class="profile-actions">
+                {% if user.is_authenticated and user == profile_user %}
+                    <a href="{% url 'profile_detail' %}" class="btn btn-primary">
+                        <i class="fas fa-user"></i> My Profile
+                    </a>
+                {% endif %}
+                <a href="{% url 'home' %}" class="btn btn-secondary">
+                    <i class="fas fa-home"></i> Back to Home
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Stats -->
+    <div class="profile-stats">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-newspaper"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ user_posts.count }}</h3>
+                <p>Posts</p>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-eye"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ user_posts.count|add:"0" }}</h3>
+                <p>Total Views</p>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-calendar-alt"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ profile_user.date_joined|date:"M Y" }}</h3>
+                <p>Member Since</p>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-trophy"></i>
+            </div>
+            <div class="stat-content">
+                <h3>Blogger</h3>
+                <p>Level</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Social Links -->
+    {% if profile_user.profile.twitter or profile_user.profile.facebook or profile_user.profile.instagram or profile_user.profile.linkedin or profile_user.profile.github %}
+        <div class="social-links-section">
+            <h3><i class="fas fa-share-alt"></i> Social Links</h3>
+            <div class="social-links">
+                {% if profile_user.profile.twitter %}
+                    <a href="{{ profile_user.profile.twitter }}" target="_blank" rel="noopener" class="social-link twitter">
+                        <i class="fab fa-twitter"></i>
+                        <span>Twitter</span>
+                    </a>
+                {% endif %}
+                
+                {% if profile_user.profile.facebook %}
+                    <a href="{{ profile_user.profile.facebook }}" target="_blank" rel="noopener" class="social-link facebook">
+                        <i class="fab fa-facebook"></i>
+                        <span>Facebook</span>
+                    </a>
+                {% endif %}
+                
+                {% if profile_user.profile.instagram %}
+                    <a href="{{ profile_user.profile.instagram }}" target="_blank" rel="noopener" class="social-link instagram">
+                        <i class="fab fa-instagram"></i>
+                        <span>Instagram</span>
+                    </a>
+                {% endif %}
+                
+                {% if profile_user.profile.linkedin %}
+                    <a href="{{ profile_user.profile.linkedin }}" target="_blank" rel="noopener" class="social-link linkedin">
+                        <i class="fab fa-linkedin"></i>
+                        <span>LinkedIn</span>
+                    </a>
+                {% endif %}
+                
+                {% if profile_user.profile.github %}
+                    <a href="{{ profile_user.profile.github }}" target="_blank" rel="noopener" class="social-link github">
+                        <i class="fab fa-github"></i>
+                        <span>GitHub</span>
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- User's Posts -->
+    <div class="user-posts-section">
+        <div class="section-header">
+            <h2><i class="fas fa-newspaper"></i> Posts by {{ profile_user.username }}</h2>
+            <p>All posts published by this author</p>
+        </div>
+
+        {% if user_posts %}
+            <div class="posts-grid">
+                {% for post in user_posts %}
+                    <article class="post-card">
+                        <div class="post-header">
+                            <h3 class="post-title">
+                                <a href="{% url 'post_detail' post.id %}" class="post-title-link">
+                                    {{ post.title }}
+                                </a>
+                            </h3>
+                            <div class="post-meta">
+                                <span class="date">
+                                    <i class="fas fa-calendar"></i>
+                                    {{ post.created_at|date:"M d, Y" }}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="post-content">
+                            <p>{{ post.content|truncatewords:20 }}</p>
+                        </div>
+
+                        {% if post.images.all %}
+                            <div class="post-images">
+                                <span class="image-count">
+                                    <i class="fas fa-images"></i>
+                                    {{ post.images.count }} image{{ post.images.count|pluralize }}
+                                </span>
+                            </div>
+                        {% endif %}
+
+                        <div class="post-actions">
+                            <a href="{% url 'post_detail' post.id %}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-eye"></i> Read More
+                            </a>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-newspaper"></i>
+                <h3>No posts yet</h3>
+                <p>{{ profile_user.username }} hasn't published any posts yet.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .profile-detail-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .profile-header {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        overflow: hidden;
+    }
+
+    .profile-cover {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        height: 200px;
+        position: relative;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        padding-bottom: 2rem;
+    }
+
+    .profile-avatar {
+        position: absolute;
+        bottom: -50px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .profile-avatar img {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        border: 5px solid white;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        object-fit: cover;
+    }
+
+    .default-avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        border: 5px solid white;
+        background: rgba(255, 255, 255, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        color: #667eea;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .profile-info {
+        padding: 3rem 2rem 2rem;
+        text-align: center;
+    }
+
+    .profile-name {
+        font-size: 2rem;
+        color: #333;
+        margin-bottom: 0.5rem;
+        font-weight: 700;
+    }
+
+    .profile-username {
+        color: #667eea;
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+        font-weight: 500;
+    }
+
+    .profile-bio {
+        color: #666;
+        font-size: 1.1rem;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .profile-meta {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .meta-item a {
+        color: #667eea;
+        text-decoration: none;
+    }
+
+    .meta-item a:hover {
+        text-decoration: underline;
+    }
+
+    .profile-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .profile-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 15px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+    }
+
+    .stat-content h3 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #333;
+        margin: 0 0 0.5rem 0;
+    }
+
+    .stat-content p {
+        color: #666;
+        margin: 0;
+        font-weight: 500;
+    }
+
+    .social-links-section {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .social-links-section h3 {
+        font-size: 1.5rem;
+        color: #333;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .social-links {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .social-link {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        border-radius: 10px;
+        text-decoration: none;
+        color: white;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .social-link.twitter {
+        background: #1DA1F2;
+    }
+
+    .social-link.facebook {
+        background: #4267B2;
+    }
+
+    .social-link.instagram {
+        background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+    }
+
+    .social-link.linkedin {
+        background: #0077B5;
+    }
+
+    .social-link.github {
+        background: #333;
+    }
+
+    .social-link:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .user-posts-section {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .section-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .section-header h2 {
+        font-size: 2rem;
+        color: #333;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .section-header p {
+        color: #666;
+        font-size: 1.1rem;
+    }
+
+    .posts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 2rem;
+    }
+
+    .post-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .post-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .post-title-link {
+        color: #333;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .post-title-link:hover {
+        color: #667eea;
+    }
+
+    .post-meta {
+        display: flex;
+        gap: 1rem;
+        font-size: 0.9rem;
+        color: #666;
+        margin-bottom: 1rem;
+    }
+
+    .post-content {
+        margin-bottom: 1rem;
+        line-height: 1.6;
+        color: #555;
+    }
+
+    .post-images {
+        margin-bottom: 1rem;
+    }
+
+    .image-count {
+        color: #666;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .post-actions {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .btn-sm {
+        padding: 0.5rem 1rem;
+        font-size: 0.8rem;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: #666;
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        color: #ddd;
+        margin-bottom: 1rem;
+    }
+
+    .empty-state h3 {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+        color: #333;
+    }
+
+    .empty-state p {
+        margin-bottom: 2rem;
+    }
+
+    @media (max-width: 768px) {
+        .profile-detail-container {
+            padding: 1rem;
+        }
+
+        .profile-info {
+            padding: 2rem 1rem 1rem;
+        }
+
+        .profile-name {
+            font-size: 1.5rem;
+        }
+
+        .profile-meta {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .profile-actions {
+            flex-direction: column;
+        }
+
+        .profile-stats {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
+
+        .social-links {
+            flex-direction: column;
+        }
+
+        .posts-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %} 

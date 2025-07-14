@@ -1,0 +1,411 @@
+{% extends 'blog/base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - BlogHub{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <div class="welcome-section">
+        <h1><i class="fas fa-tachometer-alt"></i> Dashboard</h1>
+        <p>Welcome back, {{ user.username }}! Here's what's happening with your blog.</p>
+    </div>
+    <div class="quick-actions">
+        <a href="{% url 'create_post' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> New Post
+        </a>
+        <a href="{% url 'edit_profile' %}" class="btn btn-secondary">
+            <i class="fas fa-user-edit"></i> Edit Profile
+        </a>
+    </div>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon">
+            <i class="fas fa-newspaper"></i>
+        </div>
+        <div class="stat-content">
+            <h3>{{ user_posts.count }}</h3>
+            <p>Total Posts</p>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon">
+            <i class="fas fa-eye"></i>
+        </div>
+        <div class="stat-content">
+            <h3>{{ user_posts.count|add:"0" }}</h3>
+            <p>Total Views</p>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon">
+            <i class="fas fa-calendar-alt"></i>
+        </div>
+        <div class="stat-content">
+            <h3>{{ user.date_joined|date:"M Y" }}</h3>
+            <p>Member Since</p>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon">
+            <i class="fas fa-trophy"></i>
+        </div>
+        <div class="stat-content">
+            <h3>Blogger</h3>
+            <p>Your Level</p>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="section-header">
+        <h2><i class="fas fa-list"></i> Your Posts</h2>
+        <p>Manage and edit your published content</p>
+    </div>
+
+    {% if user_posts %}
+        <div class="posts-management">
+            {% for post in user_posts %}
+                <div class="post-item">
+                    <div class="post-info">
+                        <div class="post-header">
+                            <h3>{{ post.title }}</h3>
+                            <span class="post-date">
+                                <i class="fas fa-calendar"></i>
+                                {{ post.created_at|date:"M d, Y" }}
+                            </span>
+                        </div>
+                        
+                        <div class="post-preview">
+                            <p>{{ post.content|truncatewords:20 }}</p>
+                        </div>
+
+                        {% if post.images.all %}
+                            <div class="post-images-preview">
+                                <span class="image-count">
+                                    <i class="fas fa-images"></i>
+                                    {{ post.images.count }} image{{ post.images.count|pluralize }}
+                                </span>
+                                <div class="image-thumbnails">
+                                    {% for image in post.images.all|slice:":3" %}
+                                        <img src="{{ image.image.url }}" alt="Post Image" loading="lazy">
+                                    {% endfor %}
+                                    {% if post.images.count > 3 %}
+                                        <div class="more-images">
+                                            <span>+{{ post.images.count|add:"-3" }}</span>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="post-actions">
+                        <a href="{% url 'edit_post' post.id %}" class="btn btn-secondary btn-sm">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        <a href="{% url 'delete_post' post.id %}" class="btn btn-danger btn-sm">
+                            <i class="fas fa-trash"></i> Delete
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="fas fa-newspaper"></i>
+            </div>
+            <h3>No posts yet</h3>
+            <p>Start your blogging journey by creating your first post!</p>
+            <a href="{% url 'create_post' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Create Your First Post
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .welcome-section h1 {
+        font-size: 2.5rem;
+        color: #333;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .welcome-section p {
+        color: #666;
+        font-size: 1.1rem;
+        margin: 0;
+    }
+
+    .quick-actions {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+    }
+
+    .stat-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 15px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+    }
+
+    .stat-content h3 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #333;
+        margin: 0 0 0.5rem 0;
+    }
+
+    .stat-content p {
+        color: #666;
+        margin: 0;
+        font-weight: 500;
+    }
+
+    .section-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .section-header h2 {
+        font-size: 2rem;
+        color: #333;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .section-header p {
+        color: #666;
+        font-size: 1.1rem;
+    }
+
+    .posts-management {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .post-item {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 2rem;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .post-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .post-info {
+        flex: 1;
+    }
+
+    .post-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .post-header h3 {
+        font-size: 1.3rem;
+        color: #333;
+        margin: 0;
+        line-height: 1.3;
+    }
+
+    .post-date {
+        color: #666;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        white-space: nowrap;
+    }
+
+    .post-preview {
+        margin-bottom: 1rem;
+    }
+
+    .post-preview p {
+        color: #555;
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    .post-images-preview {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .image-count {
+        color: #666;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .image-thumbnails {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .image-thumbnails img {
+        width: 40px;
+        height: 40px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 2px solid #eee;
+    }
+
+    .more-images {
+        width: 40px;
+        height: 40px;
+        background: #667eea;
+        color: white;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .post-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        flex-shrink: 0;
+    }
+
+    .btn-sm {
+        padding: 0.5rem 1rem;
+        font-size: 0.8rem;
+        white-space: nowrap;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: #666;
+    }
+
+    .empty-icon {
+        margin-bottom: 1.5rem;
+    }
+
+    .empty-icon i {
+        font-size: 4rem;
+        color: #ddd;
+    }
+
+    .empty-state h3 {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+        color: #333;
+    }
+
+    .empty-state p {
+        margin-bottom: 2rem;
+        font-size: 1.1rem;
+    }
+
+    @media (max-width: 768px) {
+        .dashboard-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .welcome-section h1 {
+            font-size: 2rem;
+        }
+
+        .stats-grid {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
+
+        .stat-card {
+            padding: 1.5rem;
+        }
+
+        .post-item {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .post-actions {
+            flex-direction: row;
+            width: 100%;
+        }
+
+        .post-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+</style>
+{% endblock %}

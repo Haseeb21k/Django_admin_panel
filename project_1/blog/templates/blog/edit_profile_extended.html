@@ -1,0 +1,462 @@
+{% extends 'blog/base.html' %}
+{% load static %}
+
+{% block title %}Edit Profile - BlogHub{% endblock %}
+
+{% block content %}
+<div class="edit-profile-container">
+    <div class="edit-profile-header">
+        <h1><i class="fas fa-user-edit"></i> Edit Profile</h1>
+        <p>Update your personal information and profile details</p>
+    </div>
+
+    <div class="edit-profile-content">
+        <form method="POST" enctype="multipart/form-data" class="profile-form">
+            {% csrf_token %}
+            
+            <!-- Profile Picture Section -->
+            <div class="form-section">
+                <h3><i class="fas fa-camera"></i> Profile Picture</h3>
+                <div class="profile-picture-section">
+                    <div class="current-picture">
+                        {% if user.profile.profile_picture %}
+                            <img src="{{ user.profile.profile_picture.url }}" alt="Current profile picture" id="current-picture">
+                        {% else %}
+                            <div class="default-picture">
+                                <i class="fas fa-user"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="picture-upload">
+                        <label for="{{ profile_form.profile_picture.id_for_label }}" class="upload-label">
+                            <i class="fas fa-upload"></i>
+                            Choose New Picture
+                        </label>
+                        {{ profile_form.profile_picture }}
+                        <small class="form-text">Recommended size: 400x400 pixels. Max file size: 5MB.</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Basic Information -->
+            <div class="form-section">
+                <h3><i class="fas fa-info-circle"></i> Basic Information</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="{{ user_form.username.id_for_label }}">Username</label>
+                        {{ user_form.username }}
+                        {% if user_form.username.errors %}
+                            <div class="error-message">{{ user_form.username.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ user_form.email.id_for_label }}">Email</label>
+                        {{ user_form.email }}
+                        {% if user_form.email.errors %}
+                            <div class="error-message">{{ user_form.email.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="{{ user_form.first_name.id_for_label }}">First Name</label>
+                        {{ user_form.first_name }}
+                        {% if user_form.first_name.errors %}
+                            <div class="error-message">{{ user_form.first_name.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ user_form.last_name.id_for_label }}">Last Name</label>
+                        {{ user_form.last_name }}
+                        {% if user_form.last_name.errors %}
+                            <div class="error-message">{{ user_form.last_name.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Personal Details -->
+            <div class="form-section">
+                <h3><i class="fas fa-user"></i> Personal Details</h3>
+                <div class="form-group">
+                    <label for="{{ profile_form.bio.id_for_label }}">Bio</label>
+                    {{ profile_form.bio }}
+                    <small class="form-text">Tell us about yourself (max 500 characters)</small>
+                    {% if profile_form.bio.errors %}
+                        <div class="error-message">{{ profile_form.bio.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="{{ profile_form.location.id_for_label }}">Location</label>
+                        {{ profile_form.location }}
+                        {% if profile_form.location.errors %}
+                            <div class="error-message">{{ profile_form.location.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ profile_form.birth_date.id_for_label }}">Birth Date</label>
+                        {{ profile_form.birth_date }}
+                        {% if profile_form.birth_date.errors %}
+                            <div class="error-message">{{ profile_form.birth_date.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="{{ profile_form.website.id_for_label }}">Website</label>
+                        {{ profile_form.website }}
+                        {% if profile_form.website.errors %}
+                            <div class="error-message">{{ profile_form.website.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ profile_form.phone.id_for_label }}">Phone</label>
+                        {{ profile_form.phone }}
+                        {% if profile_form.phone.errors %}
+                            <div class="error-message">{{ profile_form.phone.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Social Media Links -->
+            <div class="form-section">
+                <h3><i class="fas fa-share-alt"></i> Social Media Links</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="{{ profile_form.twitter.id_for_label }}">
+                            <i class="fab fa-twitter"></i> Twitter
+                        </label>
+                        {{ profile_form.twitter }}
+                        {% if profile_form.twitter.errors %}
+                            <div class="error-message">{{ profile_form.twitter.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ profile_form.facebook.id_for_label }}">
+                            <i class="fab fa-facebook"></i> Facebook
+                        </label>
+                        {{ profile_form.facebook }}
+                        {% if profile_form.facebook.errors %}
+                            <div class="error-message">{{ profile_form.facebook.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="{{ profile_form.instagram.id_for_label }}">
+                            <i class="fab fa-instagram"></i> Instagram
+                        </label>
+                        {{ profile_form.instagram }}
+                        {% if profile_form.instagram.errors %}
+                            <div class="error-message">{{ profile_form.instagram.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ profile_form.linkedin.id_for_label }}">
+                            <i class="fab fa-linkedin"></i> LinkedIn
+                        </label>
+                        {{ profile_form.linkedin }}
+                        {% if profile_form.linkedin.errors %}
+                            <div class="error-message">{{ profile_form.linkedin.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ profile_form.github.id_for_label }}">
+                        <i class="fab fa-github"></i> GitHub
+                    </label>
+                    {{ profile_form.github }}
+                    {% if profile_form.github.errors %}
+                        <div class="error-message">{{ profile_form.github.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
+                <a href="{% url 'profile_detail' %}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .edit-profile-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .edit-profile-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .edit-profile-header h1 {
+        font-size: 2.5rem;
+        color: #333;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .edit-profile-header p {
+        color: #666;
+        font-size: 1.1rem;
+    }
+
+    .edit-profile-content {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .form-section {
+        margin-bottom: 2.5rem;
+        padding-bottom: 2rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .form-section:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+    }
+
+    .form-section h3 {
+        font-size: 1.5rem;
+        color: #333;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .profile-picture-section {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .current-picture {
+        flex-shrink: 0;
+    }
+
+    .current-picture img,
+    .default-picture {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        border: 3px solid #667eea;
+        object-fit: cover;
+    }
+
+    .default-picture {
+        background: rgba(102, 126, 234, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        color: #667eea;
+    }
+
+    .picture-upload {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .upload-label {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .upload-label:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .upload-label i {
+        margin-right: 0.5rem;
+    }
+
+    input[type="file"] {
+        display: none;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .form-group label i {
+        margin-right: 0.5rem;
+        color: #667eea;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 2px solid rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .form-group textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    .form-text {
+        display: block;
+        margin-top: 0.25rem;
+        font-size: 0.875rem;
+        color: #666;
+    }
+
+    .error-message {
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .btn {
+        padding: 0.75rem 2rem;
+        border: none;
+        border-radius: 10px;
+        font-size: 1rem;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-secondary {
+        background: rgba(0, 0, 0, 0.1);
+        color: #333;
+    }
+
+    .btn-secondary:hover {
+        background: rgba(0, 0, 0, 0.2);
+        transform: translateY(-2px);
+    }
+
+    @media (max-width: 768px) {
+        .edit-profile-container {
+            padding: 1rem;
+        }
+
+        .edit-profile-header h1 {
+            font-size: 2rem;
+        }
+
+        .edit-profile-content {
+            padding: 1.5rem;
+        }
+
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+
+        .profile-picture-section {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<script>
+    // Preview profile picture before upload
+    document.getElementById('{{ profile_form.profile_picture.id_for_label }}').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const currentPicture = document.getElementById('current-picture');
+                if (currentPicture) {
+                    currentPicture.src = e.target.result;
+                } else {
+                    const defaultPicture = document.querySelector('.default-picture');
+                    if (defaultPicture) {
+                        defaultPicture.innerHTML = `<img src="${e.target.result}" alt="Preview" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+                    }
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
+{% endblock %} 
